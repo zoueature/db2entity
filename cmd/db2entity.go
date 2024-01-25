@@ -44,7 +44,7 @@ func tables(dbName string) (map[string][]*tableColumn, error) {
 	}
 	result := make(map[string][]*tableColumn)
 	for rows.Next() {
-		tname, cname, dtype, ccomment := "","","",""
+		tname, cname, dtype, ccomment := "", "", "", ""
 		err = rows.Scan(&tname, &cname, &dtype, &ccomment)
 		if err != nil {
 			return nil, err
@@ -101,7 +101,6 @@ func toCamel(s string) string {
 	return buf.String()
 }
 
-
 func mysqlTypeToGoType(mysqlType string) string {
 	switch mysqlType {
 	case "tinyint", "int", "smallint", "mediumint":
@@ -155,12 +154,15 @@ func writeToTable(dst, pkg, table string, c []column) (string, error) {
 }
 
 const template = `package %s
+
+import "gorm.io/gorm/schema"
+
 %s
 type %s struct {
 %s
 }
 
-func (t %s) TableName() string {
-	return "%s"
+func (t %s) TableName(n schema.Namer) string {
+	return n.TableName("%s")
 }
 `
